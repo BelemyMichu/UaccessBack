@@ -12,7 +12,7 @@ const getUser = async (email) => {
     const res = await clientDB.query(query, values); //ejecuta la query y los valores de la consulta
     return JSON.parse(JSON.stringify(res.rows[0]));
   } catch (error) {
-    throw new Error(error);
+    throw new Error("User not found");
   }
 };
 

@@ -3,13 +3,14 @@ import { hashPassword, verifyPassword } from "../functions/bpt.js";
 
 const login = async (req, res) => {
   const { email, password } = req.body;
+  console.log(email, password);
   try {
     const data = await Model.getUser(email);
     const compare = verifyPassword(password, data.password);
     if (compare) {
       res.status(200).json({ status: 200, message: "Usuario logueado", data });
     } else {
-        res.status(401).json({ status: 401, message: "Usuario no logueado" });
+        res.status(401).json({ status: 401, message: "Usuario no encontrado" });
     }
   } catch (error) {
     console.log(error.message);

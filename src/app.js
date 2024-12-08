@@ -4,6 +4,7 @@ import cors from "cors";
 import helmet from "helmet";
 import authRoutes from "./routes/auth.routes.js";
 import reportRoutes from "./routes/report.routes.js";
+import clasesRoutes from "./routes/asistencia.routes.js";
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.use(helmet()); // Para mejorar la seguridad
 // Rutas
 app.use("/api/auth", authRoutes);
 app.use("/api/report", reportRoutes);
+app.use("/api/clases", clasesRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Mitchu!" });
