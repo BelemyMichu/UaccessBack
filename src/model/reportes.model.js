@@ -1,6 +1,15 @@
 import openai from "../openai.js";
 import fs from "fs";
 import PDFDocument from "pdfkit";
+import dotenv from "dotenv";
+import { createClient } from "@supabase/supabase-js";
+
+dotenv.config();
+// Configuración de Supabase
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_KEY,
+);
 
 const generateReport = async (input) => {
   try {
@@ -14,7 +23,7 @@ const generateReport = async (input) => {
         },
         {
           role: "user",
-          content: `Genera el análisis de los datos academicos basado en los siguientes datos (No escribas en MARKDOWN): ${input}`,
+          content: `Genera el análisis de los datos académicos basado en los siguientes datos (No escribas en MARKDOWN): ${input}`,
         },
       ],
     });
@@ -35,9 +44,24 @@ const generateReport = async (input) => {
 
     doc.pipe(fs.createWriteStream(pdfPath));
     console.log(`Reporte profesional generado correctamente en: ${pdfPath}`);
-    return pdfPath;
+
+    const file = fs.readFileSync(pdfPath);
+
+    const { data: uploadData, error } = await supabase.storage
+      .from("Reporte") // Reemplaza con tu bucket de Supabase
+      .upload("informes/reporte_profesional.pdf", file, {
+        contentType: "application/pdf",
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    console.log("Archivo subido correctamente a Supabase:", uploadData);
+
+    return uploadData;
   } catch (error) {
-    console.error("Error al generar el reporte profesional:", error.message);
+    console.error("Error al generar o subir el reporte:", error.message);
     throw error;
   }
 };
